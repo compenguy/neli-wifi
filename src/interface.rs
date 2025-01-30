@@ -33,7 +33,7 @@ impl TryFrom<Attrs<'_, Nl80211Attr>> for Interface {
     fn try_from(attrs: Attrs<'_, Nl80211Attr>) -> Result<Self, Self::Error> {
         let mut res = Self::default();
         for attr in attrs.iter() {
-            match attr.nla_type.nla_type {
+            match attr.nla_type().nla_type() {
                 Nl80211Attr::AttrIfindex => {
                     res.index = Some(attr.get_payload_as()?);
                 }

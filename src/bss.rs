@@ -33,7 +33,7 @@ impl TryFrom<Attrs<'_, Nl80211Attr>> for Bss {
         if let Some(bss) = attrs.get_attribute(Nl80211Attr::AttrBss) {
             let attrs = bss.get_attr_handle::<Nl80211Bss>()?;
             for attr in attrs.iter() {
-                match attr.nla_type.nla_type {
+                match attr.nla_type().nla_type() {
                     Nl80211Bss::BssBssid => {
                         res.bssid = Some(attr.get_payload_as_with_len()?);
                     }

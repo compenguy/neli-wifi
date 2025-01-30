@@ -37,13 +37,13 @@ impl TryFrom<Attrs<'_, Nl80211Attr>> for Station {
     fn try_from(attrs: Attrs<'_, Nl80211Attr>) -> Result<Self, Self::Error> {
         let mut res = Self::default();
         if let Some(bssid) = attrs.get_attribute(Nl80211Attr::AttrMac) {
-            res.bssid = Some(Vec::from(bssid.nla_payload.as_ref()));
+            res.bssid = Some(Vec::from(bssid.nla_payload().as_ref()));
         }
 
         if let Some(info) = attrs.get_attribute(Nl80211Attr::AttrStaInfo) {
             let attrs = info.get_attr_handle::<Nl80211StaInfo>().unwrap();
             for attr in attrs.iter() {
-                match attr.nla_type.nla_type {
+                match attr.nla_type().nla_type() {
                     Nl80211StaInfo::StaInfoSignal => res.signal = Some(attr.get_payload_as()?),
                     Nl80211StaInfo::StaInfoSignalAvg => {
                         res.average_signal = Some(attr.get_payload_as()?)
