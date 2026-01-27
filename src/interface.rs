@@ -20,7 +20,7 @@ pub struct Interface {
     /// Interface chanel
     pub channel: Option<u32>,
     /// Interface transmit power level in signed mBm units.
-    pub power: Option<u32>,
+    pub power: Option<i32>,
     /// index of wiphy to operate on, cf. /sys/class/ieee80211/<phyname>/index
     pub phy: Option<u32>,
     /// Wireless device identifier, used for pseudo-devices that don't have a netdev
@@ -111,7 +111,7 @@ mod test_interface {
             name: Some(vec![119, 108, 112, 53, 115, 48]),
             frequency: Some(u32::from_le_bytes([108, 9, 0, 0])),
             channel: Some(u32::from_le_bytes([1, 0, 0, 0])),
-            power: Some(u32::from_le_bytes([164, 6, 0, 0])),
+            power: Some(i32::from_le_bytes([164, 6, 0, 0])),
             phy: Some(u32::from_le_bytes([0, 0, 0, 0])),
             device: Some(u64::from_le_bytes([1, 0, 0, 0, 0, 0, 0, 0])),
         };
