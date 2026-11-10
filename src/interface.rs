@@ -17,8 +17,15 @@ pub struct Interface {
     pub name: Option<Vec<u8>>,
     /// Interface frequency of the selected channel (MHz)
     pub frequency: Option<u32>,
-    /// Interface chanel
-    pub channel: Option<u32>,
+    /// Channel width of the operating channel, as an `nl80211_chan_width` code
+    /// (e.g. 0 = 20 MHz no-HT, 1 = 20 MHz, 2 = 40 MHz, 3 = 80 MHz, 5 = 160 MHz).
+    /// This is not a channel number.
+    pub channel_width: Option<u32>,
+    /// Center frequency of the first segment of the operating channel (MHz)
+    pub center_freq1: Option<u32>,
+    /// Center frequency of the second segment of the operating channel (MHz),
+    /// only present for 80+80 MHz channels
+    pub center_freq2: Option<u32>,
     /// Interface transmit power level in signed mBm units.
     pub power: Option<i32>,
     /// index of wiphy to operate on, cf. /sys/class/ieee80211/<phyname>/index
@@ -50,7 +57,13 @@ impl TryFrom<Attrs<'_, Nl80211Attr>> for Interface {
                     res.frequency = Some(attr.get_payload_as()?);
                 }
                 Nl80211Attr::AttrChannelWidth => {
-                    res.channel = Some(attr.get_payload_as()?);
+                    res.channel_width = Some(attr.get_payload_as()?);
+                }
+                Nl80211Attr::AttrCenterFreq1 => {
+                    res.center_freq1 = Some(attr.get_payload_as()?);
+                }
+                Nl80211Attr::AttrCenterFreq2 => {
+                    res.center_freq2 = Some(attr.get_payload_as()?);
                 }
                 Nl80211Attr::AttrWiphyTxPowerLevel => {
                     res.power = Some(attr.get_payload_as()?);
@@ -97,6 +110,7 @@ mod test_interface {
             new_attr(AttrMac, vec![255, 255, 255, 255, 255, 255]),
             new_attr(AttrWiphyFreq, vec![108, 9, 0, 0]),
             new_attr(AttrChannelWidth, vec![1, 0, 0, 0]),
+            new_attr(AttrCenterFreq1, vec![108, 9, 0, 0]),
             new_attr(AttrWiphyTxPowerLevel, vec![164, 6, 0, 0]),
             new_attr(AttrSsid, vec![101, 100, 117, 114, 111, 97, 109]),
         ];
@@ -110,7 +124,9 @@ mod test_interface {
             mac: Some(vec![255, 255, 255, 255, 255, 255]),
             name: Some(vec![119, 108, 112, 53, 115, 48]),
             frequency: Some(u32::from_le_bytes([108, 9, 0, 0])),
-            channel: Some(u32::from_le_bytes([1, 0, 0, 0])),
+            channel_width: Some(u32::from_le_bytes([1, 0, 0, 0])),
+            center_freq1: Some(u32::from_le_bytes([108, 9, 0, 0])),
+            center_freq2: None,
             power: Some(i32::from_le_bytes([164, 6, 0, 0])),
             phy: Some(u32::from_le_bytes([0, 0, 0, 0])),
             device: Some(u64::from_le_bytes([1, 0, 0, 0, 0, 0, 0, 0])),
